@@ -1,10 +1,4 @@
-// // const pg = require("pg");
 
-// // const { Pool } = pg;
-
-// // const pool = new Pool({
-// //   connectionString: process.env.POSTGRES_URL + "?sslmode=require",
-// });
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
