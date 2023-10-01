@@ -1,7 +1,17 @@
 const express = require("express");
-const { addGrocery } = require("../controllers/product.controller");
+const {
+  addGrocery,
+  findAllGrocery,
+  deleteProductById,
+  updateProduct,
+  findProductById,
+} = require("../controllers/product.controller");
 const router = express.Router();
 
-router.get("/grocery", addGrocery);
+router.post("/grocery", addGrocery);
+router.get("/", findAllGrocery);
+router.get("/:productID", findProductById);
+router.delete("/:productID", deleteProductById);
+router.put("/:productId", updateProduct);
 
 module.exports = router;

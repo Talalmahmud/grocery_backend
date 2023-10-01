@@ -28,21 +28,38 @@ async function testConnection() {
 
 testConnection();
 
-const Product = sequelize.define("Product", {
-  groceryName: {
-    type: DataTypes.STRING,
-    allowNull: false,
+const Product = sequelize.define(
+  "Product",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      allowNull: false,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    groceryImage: {
+      type: DataTypes.STRING,
+    },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+    },
   },
-  groceryImage: {
-    type: DataTypes.STRING,
-  },
-  price: {
-    type: DataTypes.DECIMAL(10, 2), // Represents a decimal with up to 10 digits and 2 decimal places
-    allowNull: false,
-  },
-  description: {
-    type: DataTypes.STRING,
-  },
-});
+  {
+    tableName: "Products", // Make sure this matches your actual table name
+  }
+);
 
 module.exports = Product;
