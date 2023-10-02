@@ -10,8 +10,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", rootRoute);
 
-app.get("*", (err, req, res, next) => {
-  return res.status(404).json({
+app.get("/t", (err, req, res) => {
+  res.status(404).json({
     msg: "Some thing is wrong , please try again",
   });
 });

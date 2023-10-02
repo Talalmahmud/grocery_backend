@@ -6,12 +6,12 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  // getProductById,
+  getProductById,
 } = require("../controllers/product.controller");
 const router = express.Router();
 
 router.get("/products", getAllProducts);
-// router.get("/products/:id", getProductById);
+router.get("/products/:id", getProductById);
 router.get("/products/search", searchProducts);
 router.get("/products/filter", filterProductsByPrice);
 router.post("/products", createProduct);

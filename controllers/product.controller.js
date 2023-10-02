@@ -1,3 +1,4 @@
+const { Sequelize, Op } = require("sequelize");
 const Product = require("../model/product.model");
 
 const getAllProducts = async (req, res) => {
@@ -34,21 +35,21 @@ const createProduct = async (req, res) => {
   }
 };
 
-// const getProductById = async (req, res) => {
-//   const { id } = req.params;
+const getProductById = async (req, res) => {
+  const { id } = req.params;
 
-//   const product = await Product.findByPk(id);
-//   if (!product) {
-//     return res.status(404).json({ error: "Product not found" });
-//   }
+  const product = await Product.findByPk(id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
 
-//   try {
-//     res.status(200).json({ message: "Product find successfully", product });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+  try {
+    res.status(200).json({ message: "Product find successfully", product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
@@ -88,7 +89,6 @@ const deleteProduct = async (req, res) => {
 
 const searchProducts = async (req, res) => {
   const { query } = req.query;
-  console.log(query);
   try {
     if (!query) {
       return res
@@ -99,7 +99,7 @@ const searchProducts = async (req, res) => {
     const products = await Product.findAll({
       where: {
         name: {
-          [Sequelize.Op.iLike]: `%${query}%`,
+          [Op.iLike]: `%${query}%`,
         },
       },
     });
@@ -116,7 +116,6 @@ const searchProducts = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const filterProductsByPrice = async (req, res) => {
   const { minPrice, maxPrice } = req.query;
   try {
@@ -150,7 +149,7 @@ const filterProductsByPrice = async (req, res) => {
 module.exports = {
   getAllProducts,
   createProduct,
-  // getProductById,
+  getProductById,
   updateProduct,
   deleteProduct,
   searchProducts,
