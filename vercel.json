@@ -6,10 +6,5 @@
       "use": "@now/node"
     }
   ],
-  "routes": [
-    {
-      "src": "/routes/(.*)",
-      "dest": "./product.route"
-    }
-  ]
+  "routes": [{ "src": "/api/(.*)", "dest": "/routes/api/v1" }]
 }
