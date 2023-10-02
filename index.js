@@ -20,7 +20,7 @@ app.use(async (err, req, res, next) => {
   });
 });
 
-const port = 8000;
+const port = process.env.PORT;
 const start = () => {
   app.listen(port, () => {
     if (sequelize) {

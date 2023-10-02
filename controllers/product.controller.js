@@ -1,81 +1,158 @@
 const Product = require("../model/product.model");
 
-const addGrocery = async (req, res, next) => {
-  try {
-    const productData = req.body;
-    const newProduct = await Product.create({
-      productData,
-    });
-
-    return res.status(200).json({ newProduct });
-  } catch (error) {
-    return res.status(400).json({ error }); // You may want to handle the error in a different way based on your application's needs
-  }
-};
-
-const findAllGrocery = async (req, res, next) => {
+const getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll();
-    return res.status(200).json({ newProduct });
+    res.status(200).json(products);
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return res.status(400).json({ error });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-const findProductById = async (req, res, next) => {
-  const productId = req.params;
+const createProduct = async (req, res) => {
+  const { name, price, quantity, imageUrl, description } = req.body;
+  if (!req.body.name) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+
   try {
-    const product = await Product.findByPk(productId);
-    return product;
+    const newProduct = await Product.create({
+      name,
+      price,
+      quantity,
+      imageUrl,
+      description,
+    });
+    res.status(200).json(newProduct);
   } catch (error) {
-    console.error("Error fetching product by ID:", error);
-    throw error;
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
-const deleteProductById = async (req, res, next) => {
-  const productId = req.params.productId;
+
+// const getProductById = async (req, res) => {
+//   const { id } = req.params;
+
+//   const product = await Product.findByPk(id);
+//   if (!product) {
+//     return res.status(404).json({ error: "Product not found" });
+//   }
+
+//   try {
+//     res.status(200).json({ message: "Product find successfully", product });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+const updateProduct = async (req, res) => {
+  const { id } = req.params;
+  const { name, price, quantity } = req.body;
+
+  const product = await Product.findByPk(id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
   try {
-    const deletedProduct = await deleteProductById(productId);
-    return res.status(200).json(deletedProduct);
+    await product.update({ name, price, quantity });
+    res.status(200).json({ message: "Product updated successfully", product });
   } catch (error) {
-    console.error("Error fetching product by ID:", error);
-    return res.status(200).json(error);
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-const updateProduct = async (req, res, next) => {
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const productIdToUpdate = req.params.productId;
-    const updatedDataFromBody = req.body;
+    const product = await Product.findByPk(id);
 
-    const [rowsUpdated, [updatedProduct]] = await Product.update(
-      updatedDataFromBody,
-      {
-        where: {
-          id: productIdToUpdate,
-        },
-        returning: true,
-      }
-    );
-
-    if (updatedProduct) {
-      console.log("Product updated successfully:", updatedProduct.toJSON());
-      res.status(200).json(updatedProduct);
-    } else {
-      console.log("Product not found or could not be updated.");
-      res.status(404).json({ error: "Product not found" });
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
+
+    await product.destroy();
+    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
-    console.error("Error updating product:", error);
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const searchProducts = async (req, res) => {
+  const { query } = req.query;
+  console.log(query);
+  try {
+    if (!query) {
+      return res
+        .status(400)
+        .json({ error: "Query parameter is required for searching products." });
+    }
+
+    const products = await Product.findAll({
+      where: {
+        name: {
+          [Sequelize.Op.iLike]: `%${query}%`,
+        },
+      },
+    });
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found matching the search criteria." });
+    }
+
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const filterProductsByPrice = async (req, res) => {
+  const { minPrice, maxPrice } = req.query;
+  try {
+    if (!minPrice || !maxPrice || isNaN(minPrice) || isNaN(maxPrice)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing price range parameters." });
+    }
+
+    const products = await Product.findAll({
+      where: {
+        price: {
+          [Sequelize.Op.between]: [minPrice, maxPrice],
+        },
+      },
+    });
+
+    if (products.length === 0) {
+      return res.status(404).json({
+        message: "No products found within the specified price range.",
+      });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 module.exports = {
-  addGrocery,
+  getAllProducts,
+  createProduct,
+  // getProductById,
   updateProduct,
-  deleteProductById,
-  findAllGrocery,
-  findProductById,
+  deleteProduct,
+  searchProducts,
+  filterProductsByPrice,
 };

@@ -1,0 +1,6 @@
+create product - api/v1//products
+all product - api/v1/products
+search product - api/v1//products/search
+delete product - api/v1//products/:id
+update product - api/v1//products/:id
+search by price - api/v1//products/filter
