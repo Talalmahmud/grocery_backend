@@ -2,15 +2,19 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
-const sequelize = require("./dbConnect");
 const rootRoute = require("./routes/product.route");
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cors());
 app.use("/api/v1", rootRoute);
 
-app.get("/t", (err, req, res) => {
+app.use("/", (req, res) => {
+  res.status(200).json({ msg: "check" });
+});
+
+app.use("*", (err, req, res) => {
   res.status(404).json({
     msg: "Some thing is wrong , please try again",
   });
